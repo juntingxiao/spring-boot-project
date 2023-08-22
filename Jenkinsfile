@@ -22,8 +22,8 @@ pipeline {
                 TAG = "${BUILD_NUMBER}"
                 sh"""
                     az login --service-principal --username 222be189-63e8-4fec-9c60-de9fde36811e --password CP28Q~Idm.yx0fTuqV1ebGK4xpmpv4SV1ygBCcRz --tenant fafc518b-2d6a-4c21-bb5c-be77fbdd3eab
-                    ACR_PWD=$(az keyvault secret show --name kv-demo0823 --vault-name acr0823 --query 'value' -o tsv)
-                    echo \$ACR_PWD  | docker login --username acr0823 --password-stdin ${ACR_ADDRESS}
+                    az keyvault secret show --name kv-demo0823 --vault-name acr0823 --query 'value' -o tsv > ACR_PWD
+                    cat ACR_PWD  | docker login --username acr0823 --password-stdin ${ACR_ADDRESS}
                     docker build -t ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG} .
                     docker push ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}
                 """
