@@ -1,0 +1,18 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-boot-project
+  namespace: dev
+spec:
+  rules:
+  - host: spring-boot-project.test.com
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: spring-boot-project
+            port:
+              number: 8761
+        pathType: ImplementationSpecific

@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-project
+  namespace: dev
+  labels:
+    app: spring-boot-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-project
+  template:
+    metadata:
+      name: spring-boot-project
+      labels:
+        app: spring-boot-project
+    spec:
+      containers:
+      #- image: 10.211.55.107/kubernetes/nginx:alpine 
+      - image: acr0823.azurecr.io/general/spring-boot-project:14  
+        name: spring-boot-project
+        ports:
+        - containerPort: 8761
+          name: web
+          protocol: TCP
