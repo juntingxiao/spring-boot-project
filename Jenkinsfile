@@ -38,11 +38,11 @@ pipeline {
             MY_KUBECONFIG = credentials("${AKS_CONFIG}")
         }
         steps {
-            container(name: 'kubectl'){
-            sh """
-            yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
-            kubectl --kubeconfig $MY_KUBECONFIG apply -f deploy/
-            """
+            script{
+                sh """
+                yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
+                kubectl --kubeconfig $MY_KUBECONFIG apply -f deploy/
+                """
             }
         }
         }
