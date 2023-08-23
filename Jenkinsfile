@@ -15,6 +15,8 @@ pipeline {
         stage('building'){
             steps{
                 sh"""
+                    ls -l
+                    pwd
                     mvn clean install -DskipTests
                 """
             }
@@ -29,6 +31,7 @@ pipeline {
                         cat ACR_PWD  | docker login --username acr0823 --password-stdin ${ACR_ADDRESS}
                         docker build -t ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG} .
                         docker push ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}
+                        docker logout ${ACR_ADDRESS}
                     """
                 }
             }
