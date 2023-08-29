@@ -25,7 +25,8 @@ spec:
     - cat
     tty: true
   - name: azure-cli
-    image: mcr.microsoft.com/azure-cli
+    #image: mcr.microsoft.com/azure-cli
+    image: bitnami/kubectl:1.27.5
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: maven
@@ -48,6 +49,11 @@ spec:
     stages {
         stage('building'){
             steps{
+                container(name: 'azure-cli'){
+                    sh"""
+                      echo hello world
+                      kubectl version
+                    """                
                 container(name: 'maven'){
                     sh"""
                       mvn clean install -DskipTests
