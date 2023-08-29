@@ -7,7 +7,7 @@ pipeline {
         ACR_ADDRESS = "acrfordemoapp.azurecr.io"
         REGISTRY_DIR = "app"     
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
-        AKS_CONFIG = "aksapp-st"        
+        AKS_CONFIG = "aksapp"        
     }    
    
     //agent any
@@ -19,27 +19,21 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: aa
-    image: alpine:latest
-    command: 
-    - cat
-    tty: true
   - name: azure-cli
     #image: mcr.microsoft.com/azure-cli
     image: bitnami/kubectl:1.27.5
-    command: ["cat"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: maven
     image: maven:3.5.3
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
-#  - name: yq
-#    image: linuxserver/yq:3.2.2
-#    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
-#    tty: true    
+  - name: yq
+    image: linuxserver/yq:3.2.2
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true    
   - name: kube-cli
-#    image: bitnami/kubectl:1.27.5
-    image: registry.cn-beijing.aliyuncs.com/citools/kubectl:self-1.17
+    image: alpine:latest
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true     
 
@@ -84,36 +78,37 @@ spec:
             }
         }  
         stage('Deploying to AKS') {
-        steps {
-            script{
-                // container('yq') {
-                //     sh """
-                //     yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
-                //     """                    
-                // }
-                // withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
-                //     container('kubectl') {
-                //         sh """
-                //         echo \$kubeconfig > kubectt
-                //         kubectl --kubeconfig \$kubeconfig apply -f deploy/
-                //         """                        
-                //     }
-                //withCredentials([string(credentialsId: "${AKS_CONFIG}", variable: 'SECRET')]) { //set SECRET with the credential content
-                //    echo "My secret text is '${SECRET}'"
-                    container('kube-cli') {
+            steps {
+                script{
+                    container('yq') {
                         sh """
-                        ls -l
-                        kubectl version
-                        """                        
-                    }        
-                               
+                        yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
+                        """                    
+                    }
+                    // withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
+                    //     container('kubectl') {
+                    //         sh """
+                    //         echo \$kubeconfig > kubectt
+                    //         kubectl --kubeconfig \$kubeconfig apply -f deploy/
+                    //         """                        
+                    //     }
+                    withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) { //set SECRET with the credential content
+                        container('kube-cli') {
+                            sh"""
+                            apk add --update curl && rm -rf /var/cache/apk/*
+                            curl -LO "https://storage.googleapis.com/kubernetes-release/release/\$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+                            chmod +x kubectl
+                            ./kubectl version
+                            ./kubectl --kubeconfig=\$kubeconfig apply -f deploy/
+                            """                         
+                        }        
+                                
 
-                //}                    
+                    }                    
+                }
             }
-        }
         }
 
     }
 }
-
 
