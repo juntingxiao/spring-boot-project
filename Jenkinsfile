@@ -33,7 +33,7 @@ spec:
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: yq
-    image: mikefarah/yq:4
+    image: gksoftware/yq:latest
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true    
   - name: kubectl
