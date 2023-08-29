@@ -28,7 +28,7 @@ spec:
     image: mcr.microsoft.com/azure-cli
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
-  - name: building
+  - name: maven
     image: maven:3.5.3
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
@@ -47,7 +47,7 @@ spec:
     stages {
         stage('building'){
             steps{
-                container(name: 'build'){
+                container(name: 'maven'){
                     sh"""
                       mvn clean install -DskipTests
                     """
