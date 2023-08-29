@@ -37,7 +37,8 @@ spec:
 #    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
 #    tty: true    
   - name: kube-cli
-    image: bitnami/kubectl:1.27.5
+#    image: bitnami/kubectl:1.27.5
+    image: registry.cn-beijing.aliyuncs.com/citools/kubectl:self-1.17
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true     
 
