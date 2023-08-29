@@ -91,8 +91,8 @@ spec:
                     echo "My secret text is '${SECRET}'"
                     container('kubectl') {
                         sh """
-                        echo '${SECRET}' > kubeconfig
-                        kubectl --kubeconfig=kubeconfig apply -f deploy/
+                        ls -l
+                        kubectl version
                         """                        
                     }        
                                
