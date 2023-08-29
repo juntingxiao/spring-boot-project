@@ -33,7 +33,7 @@ spec:
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: yq
-    image: gksoftware/yq:latest
+    image: linuxserver/yq:3.2.2   
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true    
   - name: kubectl
@@ -75,7 +75,7 @@ spec:
         }
         steps {
             script{
-                container('azure-cli') {
+                container('yq') {
                     sh """
                     yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
                     """                    
