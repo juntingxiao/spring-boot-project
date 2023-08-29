@@ -36,7 +36,7 @@ spec:
     image: linuxserver/yq:3.2.2
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true    
-  - name: kubectl
+  - name: kube
     image: bitnami/kubectl:1.27.5
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true     
@@ -87,9 +87,9 @@ spec:
                 //         kubectl --kubeconfig \$kubeconfig apply -f deploy/
                 //         """                        
                 //     }
-                withCredentials([string(credentialsId: "${AKS_CONFIG}", variable: 'SECRET')]) { //set SECRET with the credential content
-                    echo "My secret text is '${SECRET}'"
-                    container('kubectl') {
+                //withCredentials([string(credentialsId: "${AKS_CONFIG}", variable: 'SECRET')]) { //set SECRET with the credential content
+                //    echo "My secret text is '${SECRET}'"
+                    container('kube') {
                         sh """
                         ls -l
                         kubectl version
@@ -97,7 +97,7 @@ spec:
                     }        
                                
 
-                }                    
+                //}                    
             }
         }
         }
