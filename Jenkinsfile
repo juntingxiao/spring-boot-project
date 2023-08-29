@@ -1,7 +1,16 @@
 pipeline {
-    agent {
-        label 'local-agent'
-    }
+    environment{
+        COMMIT_ID = ""
+        ACR_NAME  = "acrfordemoapp"
+        REGISTRY_DIR = "kubernetes"
+        IMAGE_NAME = "spring-boot-project"
+        NAMESPACE = "kubernetes"
+        TAG = ""
+        ACR_ADDRESS = "acrfordemoapp.azurecr.io"
+        REGISTRY_DIR = "app"     
+        DEPLOY_FILE = "deploy/demo-deploy.yaml"
+        AKS_CONFIG = "aksapp"        
+    }    
     environment{
         COMMIT_ID = ""
         ACR_ADDRESS = "acr0823.azurecr.io"
@@ -10,51 +19,87 @@ pipeline {
         NAMESPACE = "kubernetes"
         AKS_CONFIG = "aks-demo"
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
-    }    
+    }        
+    //agent any
+    agent{
+        kubernetes {
+          cloud 'nsagent' // 在jenkins中可以配置多个集群， 在这里指定集群名称
+          yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: aa
+    image: alpine:latest
+    command: 
+    - cat
+    tty: true
+  - name: azure-cli
+    image: mcr.microsoft.com/azure-cli
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true
+  - name: building
+    image: maven:3.5.3
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true
+  - name: yq
+    image: linuxserver/yq:3.2.2
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true    
+  - name: kubectl
+    image: bitnami/kubectl:1.27.5
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true     
+
+'''
+        }
+    } 
     stages {
         stage('building'){
             steps{
-                sh"""
-                    ls -l
-                    pwd
-                    mvn clean install -DskipTests
-                """
-            }
-        }          
-        stage('docker build'){
-            steps{
-                script{
-                    TAG = "${BUILD_NUMBER}"
+                container(name: 'build'){
                     sh"""
-                        az login --service-principal --username 222be189-63e8-4fec-9c60-de9fde36811e --password CP28Q~Idm.yx0fTuqV1ebGK4xpmpv4SV1ygBCcRz --tenant fafc518b-2d6a-4c21-bb5c-be77fbdd3eab
-                        az keyvault secret show --name acr0823 --vault-name kv-demo0823 --query 'value' -o tsv > ACR_PWD
-                        cat ACR_PWD  | docker login --username acr0823 --password-stdin ${ACR_ADDRESS}
-                        docker build -t ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG} .
-                        docker push ${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}
-                        docker logout ${ACR_ADDRESS}
+                      mvn clean install -DskipTests
                     """
                 }
             }
+        }       
+        stage('Docker build for create image') {
+            steps {
+                script {
+                    TAG = "${BUILD_NUMBER}"
+                    container('azure-cli') {
+                        sh """
+                            az version
+                            az login --service-principal --username 397f837c-725e-4dc4-901f-bc1de9bfd366 --password XZI8Q~HWbWdkR~tgOlkl9yuqm3vVx-kH9mmeHb5C --tenant fafc518b-2d6a-4c21-bb5c-be77fbdd3eab
+                            az acr build --image ${REGISTRY_DIR}/${IMAGE_NAME}:${TAG} \
+                            --registry ${ACR_NAME} \
+                            --file Dockerfile .                        
+                        """
+                    } 
+                }               
+            }
         }  
-        stage('Deploying to K8s') {
+        stage('Deploying to AKS') {
         environment {
             MY_KUBECONFIG = credentials("${AKS_CONFIG}")
         }
         steps {
             script{
-                sh """
-                yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
-                kubectl --kubeconfig $MY_KUBECONFIG apply -f deploy/
-                """
+                container('azure-cli') {
+                    sh """
+                    yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
+                    """                    
+                }
+                container('kubectl') {
+                    sh """
+                        kubectl --kubeconfig $MY_KUBECONFIG apply -f deploy/
+                    """                    
+                }                        
             }
         }
         }
 
-    }
-    post {
-        always {
-            cleanWs()
-        }
     }
 }
 
