@@ -32,11 +32,11 @@ spec:
     image: maven:3.5.3
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
-  - name: yq
-    image: linuxserver/yq:3.2.2
-    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
-    tty: true    
-  - name: kube
+#  - name: yq
+#    image: linuxserver/yq:3.2.2
+#    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+#    tty: true    
+  - name: kube-cli
     image: bitnami/kubectl:1.27.5
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true     
@@ -75,11 +75,11 @@ spec:
         stage('Deploying to AKS') {
         steps {
             script{
-                container('yq') {
-                    sh """
-                    yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
-                    """                    
-                }
+                // container('yq') {
+                //     sh """
+                //     yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
+                //     """                    
+                // }
                 // withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
                 //     container('kubectl') {
                 //         sh """
@@ -89,7 +89,7 @@ spec:
                 //     }
                 //withCredentials([string(credentialsId: "${AKS_CONFIG}", variable: 'SECRET')]) { //set SECRET with the credential content
                 //    echo "My secret text is '${SECRET}'"
-                    container('kube') {
+                    container('kube-cli') {
                         sh """
                         ls -l
                         kubectl version
