@@ -53,7 +53,8 @@ spec:
                     sh"""
                       echo hello world
                       kubectl version
-                    """                
+                    """  
+                }
                 container(name: 'maven'){
                     sh"""
                       mvn clean install -DskipTests
