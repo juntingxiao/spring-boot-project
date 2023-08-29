@@ -83,15 +83,17 @@ spec:
                     yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
                     """                    
                 }
-                container('kubectl') {
-                    sh """
-                        kubectl --kubeconfig $MY_KUBECONFIG apply -f deploy/
-                    """                    
-                }                        
+                withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
+                    container('kubectl') {
+                        sh """
+                        kubectl --kubeconfig \$kubeconfig apply -f deploy/
+                        """                        
+                    }
+
+                }                    
             }
         }
         }
 
     }
 }
-
