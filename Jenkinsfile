@@ -27,7 +27,7 @@ spec:
   - name: azure-cli
     #image: mcr.microsoft.com/azure-cli
     image: bitnami/kubectl:1.27.5
-    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    command: ["cat"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: maven
     image: maven:3.5.3
