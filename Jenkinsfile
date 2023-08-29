@@ -11,15 +11,7 @@ pipeline {
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
         AKS_CONFIG = "aksapp"        
     }    
-    environment{
-        COMMIT_ID = ""
-        ACR_ADDRESS = "acr0823.azurecr.io"
-        REGISTRY_DIR = "general"
-        IMAGE_NAME = "spring-boot-project"
-        NAMESPACE = "kubernetes"
-        AKS_CONFIG = "aks-demo"
-        DEPLOY_FILE = "deploy/demo-deploy.yaml"
-    }        
+   
     //agent any
     agent{
         kubernetes {
