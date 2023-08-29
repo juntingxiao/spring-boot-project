@@ -2,10 +2,8 @@ pipeline {
     environment{
         COMMIT_ID = ""
         ACR_NAME  = "acrfordemoapp"
-        REGISTRY_DIR = "kubernetes"
         IMAGE_NAME = "spring-boot-project"
         NAMESPACE = "kubernetes"
-        TAG = ""
         ACR_ADDRESS = "acrfordemoapp.azurecr.io"
         REGISTRY_DIR = "app"     
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
