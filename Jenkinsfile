@@ -77,7 +77,7 @@ spec:
             script{
                 container('yq') {
                     sh """
-                    yq -i '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
+                    yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
                     """                    
                 }
                 container('kubectl') {
