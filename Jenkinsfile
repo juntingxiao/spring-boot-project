@@ -7,7 +7,7 @@ pipeline {
         ACR_ADDRESS = "acrfordemoapp.azurecr.io"
         REGISTRY_DIR = "app"     
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
-        AKS_CONFIG = "aksapp"        
+        AKS_CONFIG = "aksapp-st"        
     }    
    
     //agent any
