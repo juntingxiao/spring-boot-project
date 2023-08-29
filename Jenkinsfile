@@ -49,9 +49,11 @@ spec:
     stages {
         stage('building'){
             steps{
-                container(name: 'azure-cli'){
+                container(name: 'aa'){
                     sh"""
                       echo hello world
+                      curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+                      chmod +x kubectl
                       kubectl version
                     """  
                 }
