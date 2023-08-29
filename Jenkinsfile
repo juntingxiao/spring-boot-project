@@ -73,9 +73,6 @@ spec:
             }
         }  
         stage('Deploying to AKS') {
-        environment {
-            MY_KUBECONFIG = credentials("${AKS_CONFIG}")
-        }
         steps {
             script{
                 container('yq') {
@@ -83,12 +80,22 @@ spec:
                     yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}"' ${DEPLOY_FILE}
                     """                    
                 }
-                withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
+                // withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig')]) {
+                //     container('kubectl') {
+                //         sh """
+                //         echo \$kubeconfig > kubectt
+                //         kubectl --kubeconfig \$kubeconfig apply -f deploy/
+                //         """                        
+                //     }
+                withCredentials([string(credentialsId: "${AKS_CONFIG}", variable: 'SECRET')]) { //set SECRET with the credential content
+                    echo "My secret text is '${SECRET}'"
                     container('kubectl') {
                         sh """
-                        kubectl --kubeconfig \$kubeconfig apply -f deploy/
+                        echo '${SECRET}' > kubeconfig
+                        kubectl --kubeconfig=kubeconfig apply -f deploy/
                         """                        
-                    }
+                    }        
+                               
 
                 }                    
             }
@@ -97,3 +104,5 @@ spec:
 
     }
 }
+
+
