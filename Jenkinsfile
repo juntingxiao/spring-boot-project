@@ -42,11 +42,18 @@ spec:
 
 
     stages {
-      stage('SonarQube Analysis') {
-        def scannerHome = tool 'sonar';
-        withSonarQubeEnv() {
-          sh "${scannerHome}/bin/sonar-scanner"
-        }
+      stage('SonarQube') {
+            steps{
+                container(name: 'maven'){
+                    sh"""
+                      mvn clean verify sonar:sonar \
+                      -Dsonar.projectKey=spring-boot-project \
+                      -Dsonar.projectName='spring-boot-project' \
+                      -Dsonar.host.url=http://20.24.234.138:9000 \
+                      -Dsonar.token=sqa_bff63df3fd00475696183face63f8091892657c3
+                    """
+                }
+            }
       }
         stage('building'){
             steps{
