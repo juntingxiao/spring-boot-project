@@ -24,7 +24,7 @@ spec:
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: maven
-    image: maven:maven:3.9-amazoncorretto-8-al2023
+    image: maven:3.9-amazoncorretto-8-al2023
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
   - name: yq
