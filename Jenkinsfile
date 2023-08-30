@@ -42,12 +42,12 @@ spec:
 
 
     stages {
-          stage('SonarQube Analysis') {
-            def mvn = tool 'Default Maven';
-            withSonarQubeEnv() {
-              sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=spring-boot-project -Dsonar.projectName='spring-boot-project'"
-            }
-          }
+      stage('SonarQube Analysis') {
+        def scannerHome = tool 'sonar';
+        withSonarQubeEnv() {
+          sh "${scannerHome}/bin/sonar-scanner"
+        }
+      }
         stage('building'){
             steps{
                 container(name: 'maven'){
