@@ -88,7 +88,7 @@ spec:
         stage('Docker build for create image') {
             steps {
                 script {
-                    withCredentials([azureServicePrincipal('azure-sp-sit')]){
+                    // withCredentials([azureServicePrincipal('azure-sp-sit')]){
                         TAG = "${BUILD_NUMBER}"
                         container('docker') {
                             sh """
@@ -96,7 +96,7 @@ spec:
                                 docker save -o ${IMAGE_NAME}_${TAG}.tar ${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}                
                             """
                         } 
-                    }
+                    // }
                 }               
             }
         }  
