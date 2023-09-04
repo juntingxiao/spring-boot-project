@@ -79,7 +79,8 @@ spec:
             steps{
                 container(name: 'maven'){
                     sh"""
-                      mvn clean install -DskipTests
+                      //mvn clean install -DskipTests
+                      mvn clean install -DskipTests -Dmaven.repo.remote=https://maven.aliyun.com/repository/public
                     """
                 }
             }
