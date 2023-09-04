@@ -8,6 +8,8 @@ pipeline {
         REGISTRY_DIR = "app"     
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
         AKS_CONFIG = "aksapp"        
+        SONAR_TOKEN = "squ_b29e2582baccd69178fcd7124819ac4b3dc7de62"
+        SONAR_URL = "http://sonarqube.sonarqube-sonarqube.svc.cluster.local:9000/"
     }    
    
     //agent any
@@ -49,8 +51,8 @@ spec:
                       mvn clean verify sonar:sonar \
                       -Dsonar.projectKey=spring-boot-project \
                       -Dsonar.projectName='spring-boot-project' \
-                      -Dsonar.host.url=http://20.24.234.138:9000 \
-                      -Dsonar.token=sqa_bff63df3fd00475696183face63f8091892657c3
+                      -Dsonar.host.url=${SONAR_URL} \
+                      -Dsonar.token=${SONAR_TOKEN}
                     """
                 }
             }
