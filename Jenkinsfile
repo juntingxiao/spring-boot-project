@@ -9,7 +9,7 @@ pipeline {
         DEPLOY_FILE = "deploy/demo-deploy.yaml"
         AKS_CONFIG = "aksapp"        
         SONAR_TOKEN = "squ_b29e2582baccd69178fcd7124819ac4b3dc7de62"
-        SONAR_URL = "http://sonarqube.sonarqube-sonarqube.svc.cluster.local:9000/"
+        SONAR_URL = "http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000"
     }    
    
     //agent any
