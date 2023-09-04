@@ -13,7 +13,7 @@ pipeline {
     //agent any
     agent{
         kubernetes {
-          cloud 'nsagent' // 在jenkins中可以配置多个集群， 在这里指定集群名称
+          cloud 'ns-agent' // 在jenkins中可以配置多个集群， 在这里指定集群名称
           yaml '''
 apiVersion: v1
 kind: Pod
