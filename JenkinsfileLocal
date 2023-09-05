@@ -60,8 +60,8 @@ spec:
         path: "/var/run/docker.sock"
       name: "dockersock"      
     - name: "cachedir"
-      hostPath:
-        path: "/opt/m2"      
+      persistentVolumeClaim:
+        claimName: maven-pvc
 '''
         }
     } 
