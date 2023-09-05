@@ -43,6 +43,10 @@ spec:
     image: maven:3.6.3-jdk-11-slim
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
     tty: true
+    volumeMounts:
+    - mountPath: "/root/.m2/"
+      name: "cachedir"
+      readOnly: false    
   - name: yq
     image: linuxserver/yq:3.2.2
     command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
@@ -55,7 +59,9 @@ spec:
     - hostPath:
         path: "/var/run/docker.sock"
       name: "dockersock"      
-
+    - name: "cachedir"
+      hostPath:
+        path: "/opt/m2"      
 '''
         }
     } 
