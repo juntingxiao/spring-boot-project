@@ -99,11 +99,11 @@ spec:
                         container('docker') {
                             sh """
                                 docker build -t ${REGISTRY_DIR}/${IMAGE_NAME}:${TAG} .
-                                docker save -o ${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.tar.image ${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}                
+                                docker save -o ${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.image ${REGISTRY_DIR}/${IMAGE_NAME}:${TAG}                
                             """
                         } 
                     // }
-                    archiveArtifacts artifacts: "${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.tar.image"
+                    archiveArtifacts artifacts: "${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.image"
                 }               
             }
         }  
