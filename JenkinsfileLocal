@@ -103,9 +103,7 @@ spec:
                             """
                         } 
                     // }
-                    //archiveArtifacts artifacts: "${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.image"
-                    archiveArtifacts artifacts: "Dockerfile"
-
+                    archiveArtifacts artifacts: "${REGISTRY_DIR}_${IMAGE_NAME}_${TAG}.image" , fingerprint: false
                 }               
             }
         }  
