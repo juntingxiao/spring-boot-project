@@ -68,19 +68,20 @@ spec:
 
 
     stages {
-    //   stage('SonarQube') {
-    //         steps{
-    //             container(name: 'maven'){
-    //                 sh"""
-    //                   mvn clean verify sonar:sonar \
-    //                   -Dsonar.projectKey=spring-boot-project \
-    //                   -Dsonar.projectName='spring-boot-project' \
-    //                   -Dsonar.host.url=${SONAR_URL} \
-    //                   -Dsonar.token=${SONAR_TOKEN}
-    //                 """
-    //             }
-    //         }
-    //   }
+      stage('SonarQube') {
+            steps{
+                container(name: 'maven'){
+                    sh"""
+                      mvn clean verify sonar:sonar \
+                      -Dsonar.projectKey=spring-boot-project \
+                      -Dsonar.projectName='spring-boot-project' \
+                      -Dsonar.host.url=${SONAR_URL} \
+                      -Dsonar.token=${SONAR_TOKEN} \
+                      -Dmaven.repo.remote=https://maven.aliyun.com/repository/public
+                    """
+                }
+            }
+      }
         stage('building'){
             steps{
                 container(name: 'maven'){
