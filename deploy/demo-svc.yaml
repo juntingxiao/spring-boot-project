@@ -15,7 +15,7 @@ spec:
   selector:
     app: spring-boot-project
   sessionAffinity: None
-  type: ClusterIP
+  type: LoadBalancer
 status:
   loadBalancer: {}
 
