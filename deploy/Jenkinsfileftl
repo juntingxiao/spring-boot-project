@@ -1,0 +1,97 @@
+pipeline {
+    //agent any
+    environment{
+        COMMIT_ID = ""
+        ACR_NAME  = "acrsharesvcnonprodeas01"
+        IMAGE_NAME = "spring-boot-project"
+        ACR_ADDRESS = "acrsharesvcnonprodeas01.azurecr.io"
+        REGISTRY_DIR = "demo-cicd"     
+        DEPLOY_FILE = "deploy/demo-deploy.yaml"
+        AKS_CONFIG = "demo-cicd"  
+        DOCKERFILE = "Dockerfileftl"      
+    }      
+    agent{
+        kubernetes {
+          cloud 'agent' // 在jenkins中可以配置多个集群， 在这里指定集群名称
+          yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  # dnsPolicy: Default
+  containers:
+  - name: azure
+    image: francescotroia/azure-cli:2.47.0
+    command: ["sleep", "3600"]    
+    tty: true     
+    tty: true
+  - name: maven
+    image: maven:3.6.3-jdk-11-slim
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true
+  - name: yq
+    image: linuxserver/yq:3.2.2
+    command: ["sleep", "3600"]  # 示例命令，这里使用 sleep 命令来保持容器运行
+    tty: true       
+'''
+        }
+    }
+    
+    stages {
+        stage('building'){
+            steps{
+                container(name: 'maven'){
+                    sh"""
+                      mvn clean install -DskipTests
+                    """
+                }
+            }
+        } 
+        stage('Docker build for create image') {
+            steps {
+                script {
+                    withCredentials([azureServicePrincipal('jenkins-sp')]){
+                        IMAGE_TAG = "${BUILD_NUMBER}"
+                        container('azure') {
+                            sh """
+                                az version
+                                az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                                az acr build --image ${REGISTRY_DIR}/${IMAGE_NAME}:${IMAGE_TAG} \
+                                --registry ${ACR_NAME} \
+                                --file Dockerfile .    
+                                az acr build --image ${REGISTRY_DIR}/${IMAGE_NAME}:${IMAGE_TAG} \
+                                --registry acrdevopsprodeas01 \
+                                --agent-pool devopsagentpool \
+                                --file ${DOCKERFILE}  .                    
+                            """
+                        } 
+                    }
+                }               
+            }
+        }                
+        stage('Deploying to AKS') {
+            steps {
+                script{
+                    container('yq') {
+                        sh """
+                        yq -yi '.spec.template.spec.containers[0].image = "${ACR_ADDRESS}/${REGISTRY_DIR}/${IMAGE_NAME}:${IMAGE_TAG}"' ${DEPLOY_FILE}
+                        """                    
+                    }                    
+                    withCredentials([file(credentialsId: "${AKS_CONFIG}", variable: 'kubeconfig'),azureServicePrincipal('jenkins-sp')]) { //set SECRET with the credential content
+                        container('azure') {
+                            sh"""
+                            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                            kubelogin --kubeconfig=\$kubeconfig convert-kubeconfig -l azurecli
+                            kubectl --kubeconfig=\$kubeconfig get po
+                            kubectl --kubeconfig=\$kubeconfig apply -f deploy/
+                            """                         
+                        }        
+                                
+
+                    }                    
+                }
+            }
+        }
+    }                
+       
+
+}
