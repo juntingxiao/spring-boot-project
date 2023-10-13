@@ -5,7 +5,6 @@ metadata:
   labels:
     app: spring-boot-project
   name: spring-boot-project
-  namespace: dev
 spec:
   ports:
   - name: web
@@ -15,7 +14,7 @@ spec:
   selector:
     app: spring-boot-project
   sessionAffinity: None
-  type: LoadBalancer
+  #type: LoadBalancer
 status:
   loadBalancer: {}
 
