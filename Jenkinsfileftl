@@ -3,6 +3,7 @@ pipeline {
     environment{
         COMMIT_ID = ""
         ACR_NAME  = "acrsharesvcnonprodeas01"
+        ACR_AGENT = "devopsagentpool"
         IMAGE_NAME = "spring-boot-project"
         ACR_ADDRESS = "acrsharesvcnonprodeas01.azurecr.io"
         REGISTRY_DIR = "demo-cicd"     
@@ -57,10 +58,7 @@ spec:
                                 az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                                 az acr build --image ${REGISTRY_DIR}/${IMAGE_NAME}:${IMAGE_TAG} \
                                 --registry ${ACR_NAME} \
-                                --file Dockerfile .    
-                                az acr build --image ${REGISTRY_DIR}/${IMAGE_NAME}:${IMAGE_TAG} \
-                                --registry acrdevopsprodeas01 \
-                                --agent-pool devopsagentpool \
+                                --agent-pool ${ACR_AGENT} \
                                 --file ${DOCKERFILE}  .                    
                             """
                         } 
