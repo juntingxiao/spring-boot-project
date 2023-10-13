@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-boot-project
-  namespace: dev
   labels:
     app: spring-boot-project
 spec:
@@ -18,8 +17,7 @@ spec:
         app: spring-boot-project
     spec:
       containers:
-      #- image: 10.211.55.107/kubernetes/nginx:alpine 
-      - image: acr0823.azurecr.io/general/spring-boot-project:14  
+      - image: acrsharesvcnonprodeas01.azurecr.io/demo-cicd/spring-boot-project
         name: spring-boot-project
         ports:
         - containerPort: 8761
